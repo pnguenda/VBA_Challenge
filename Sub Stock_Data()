@@ -1,52 +1,55 @@
-Sub StockData()
+Sub Paule_Stock()
 
-        ' Declaring variables
+        'Create Variable to hold Value
         Dim ws As Worksheet
         Dim Ticker_Symbol As String
         Dim Open_Price As Double
         Dim Close_Price As Double
         Dim Yearly_Change As Double
         Dim Percent_Change As Double
-        Dim Total_Stock_V As Double
-        Dim STR As Integer
+        Dim Vol As Double
+        Dim R As Integer
         Dim i As Long
         Dim j As Long
         Dim LastRow As Long
-        Dim RowCount As Long
+        Dim XLastRow As Long
+        
+
         
         ' Loop through all sheet
-        For Each ws In Worksheet
+        For Each ws In Worksheets
         
+        ' Summary title
+        ws.Cells(1, "I").Value = "Ticker"
+        ws.Cells(1, "J").Value = "Yearly Change"
+        ws.Cells(1, "K").Value = "Percent Change"
+        ws.Cells(1, "L").Value = "Total Stock Volume"
         
-            ' Summary title
-            ws.Cells(1, "I").Value = "Ticker"
-            ws.Cells(1, "J").Value = "Yearly Change"
-            ws.Cells(1, "K").Value = "Percent Change"
-            ws.Cells(1, "L").Value = "Total Stock Volume"
+        ' Determine the Last Row
+        LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
         
-            LastRow = ws.Cells(Rows.Count, "A").End(xlUp).Row
-            STR = 2
-            First_Row = 2
-            Total_Stock_V = 0
+        ' Initialize j
+        j = 2
         
-            For i = 2 To LastRow
-            
-                Open_Price = ws.Cells(First_Row, 3).Value
-                Total_Stock_V = Total_Stock_V + ws.Cells(i + 1, 7).Value
-                
-                
-            If ws.Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
-               
-                ' Find all values
+        For i = 2 To LastRow
+        
+            ' Get initial values from start of ticker
+            If ws.Cells(i - 1, 1).Value <> ws.Cells(i, 1).Value Then
                 Ticker_Symbol = ws.Cells(i, 1).Value
+                ws.Range("I" & j) = Ticker_Symbol
+                Open_Price = ws.Cells(i, 3).Value
+                Vol = ws.Cells(i, 6).Value
+
+            Else
+                Vol = Vol + ws.Cells(i, 6).Value
+            End If
+        
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+            
+         ' Find all the values
                 Close_Price = ws.Cells(i, 6).Value
                 Yearly_Change = Close_Price - Open_Price
-                    For
-                Cells(R, 9).Value = Ticker_Symbol
-                Open_Price = Cells(i, 3).Value
-                Close_Price = Cells(i, 6).Value
-                Yearly_Change = Close_Price - Open_Price
-                Cells(R, 10).Value = Yearly_Change
+                ws.Cells(j, 10).Value = Yearly_Change
                 
                 ' Find the value of Percent Change
                 If (Open_Price = 0 And Close_Price = 0) Then
@@ -55,33 +58,35 @@ Sub StockData()
                     Percent_Change = 1
                 Else
                     Percent_Change = Yearly_Change / Open_Price
-                    Cells(R, 11).Value = Percent_Change
-                    Cells(R, 11).NumberFormat = "0.00%"
+                    ws.Cells(j, 11).Value = Percent_Change
+                    ws.Cells(j, 11).NumberFormat = "0.00%"
                 End If
+                
                 ' Find the value of Total Stock Volumn
-                Vol = Vol + Cells(i, 7).Value
-                Cells(R, 12).Value = Vol
-                ' Set a new value for Open Price
-                Open_Price = Cells(i + 1, 3)
-                ' Set a value for Vol
-                Vol = 0
-            'if cells are the same ticker
-            Else
-                Vol = Vol + Cells(i, 7).Value
+                ws.Cells(j, 12).Value = Vol
+                
+                j = j + 1
+                
             End If
+            
         Next i
         
         ' Find the Last Row of Yearly Change in each ws
-        XLastRow = Cells(Row.Count, 9).End(xlUp).Row
+        XLastRow = j - 1
+
         ' Fix the Cell Colors
         For j = 2 To XLastRow
-            If (Cells(j, 10).Value > 0 Or Cells(j, 10).Value = 0) Then
-                Cells(j, 10).Interior.ColorIndex = 10
-            ElseIf Cells(j, 10).Value < 0 Then
-                Cells(j, 10).Interior.ColorIndex = 3
+
+            If (ws.Cells(j, 10).Value > 0 Or ws.Cells(j, 10).Value = 0) Then
+                ws.Cells(j, 10).Interior.ColorIndex = 4
+            ElseIf ws.Cells(j, 10).Value < 0 Then
+                ws.Cells(j, 10).Interior.ColorIndex = 3
+            Else
+                ws.Cells(j, 10).Interior.ColorIndex = 0
             End If
+
         Next j
         
     Next ws
-        
+    
 End Sub
