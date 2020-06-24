@@ -1,13 +1,13 @@
-Sub Paule_Stock()
+Sub Stock_Data()
 
-        'Create Variable to hold Value
+        '  Declaring variable
         Dim ws As Worksheet
         Dim Ticker_Symbol As String
         Dim Open_Price As Double
         Dim Close_Price As Double
         Dim Yearly_Change As Double
         Dim Percent_Change As Double
-        Dim Vol As Double
+        Dim Vol As Long
         Dim R As Integer
         Dim i As Long
         Dim j As Long
@@ -30,6 +30,9 @@ Sub Paule_Stock()
         
         ' Initialize j
         j = 2
+        
+        ' Initialize Vol
+        Vol = 0
         
         For i = 2 To LastRow
         
@@ -66,6 +69,7 @@ Sub Paule_Stock()
                 ws.Cells(j, 12).Value = Vol
                 
                 j = j + 1
+                Vol = 0
                 
             End If
             
@@ -87,6 +91,38 @@ Sub Paule_Stock()
 
         Next j
         
+        ' Determine the greatest percent, increased and decreased and the tatol volume
+        ws.Range("P1").Value = "Ticker"
+        ws.Range("Q1").Value = "Value"
+        ws.Range("O2").Value = "Greatest Percent Increased"
+        ws.Range("O3").Value = "Greatest Percent Decreased"
+        ws.Range("O4").Value = "Greatest Total Volume"
+        
+        ' Loop through each row in a worksheet to find the greatest value and ticker
+        ' Initialize y & d
+        y = 2
+        d = 2
+        
+        For y = 2 To XLastRow
+            If ws.Cells(y, 11).Value = Application.WorksheetFunction.Max(ws.Range("K2:K" & XLastRow)) Then
+                ws.Cells(d, 16).Value = ws.Cells(y, 9).Value
+                ws.Cells(d, 17).Value = ws.Cells(y, 11).Value
+                ws.Cells(d, 17).NumberFormat = "0.00%"
+                
+            ElseIf ws.Cells(y, 11).Value = Application.WorksheetFunction.Min(ws.Range("K2:K" & XLastRow)) Then
+                ws.Cells(d + 1, 16).Value = ws.Cells(y, 9).Value
+                ws.Cells(d + 1, 17).Value = ws.Cells(y, 11).Value
+                ws.Cells(d + 1, 17).NumberFormat = "0.00%"
+                
+            ElseIf ws.Cells(y, 12).Value = Applictaion.WorksheetFunction.Max(ws.Range("L2:L" & XLastRow)) Then
+                ws.Cells(d + 2, 17).Value = ws.Cells(y, 9).Value
+                ws.Cells(d + 2, 17).Value = ws.Cells(y, 12).Value
+                
+            End If
+            
+        Next y
+        
     Next ws
     
 End Sub
+

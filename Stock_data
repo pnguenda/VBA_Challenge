@@ -1,0 +1,98 @@
+Sub Stock_Data()
+
+        '  Declaring variable
+        Dim ws As Worksheet
+        Dim Ticker_Symbol As String
+        Dim Open_Price As Double
+        Dim Close_Price As Double
+        Dim Yearly_Change As Double
+        Dim Percent_Change As Double
+        Dim Vol As Long
+        Dim R As Integer
+        Dim i As Long
+        Dim j As Long
+        Dim LastRow As Long
+        Dim XLastRow As Long
+        
+
+        
+        ' Loop through all sheet
+        For Each ws In Worksheets
+        
+        ' Summary title
+        ws.Cells(1, "I").Value = "Ticker"
+        ws.Cells(1, "J").Value = "Yearly Change"
+        ws.Cells(1, "K").Value = "Percent Change"
+        ws.Cells(1, "L").Value = "Total Stock Volume"
+        
+        ' Determine the Last Row
+        LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        
+        ' Initialize j
+        j = 2
+        
+        ' Initialize Vol
+        Vol = 0
+        
+        For i = 2 To LastRow
+        
+            ' Get initial values from start of ticker
+            If ws.Cells(i - 1, 1).Value <> ws.Cells(i, 1).Value Then
+                Ticker_Symbol = ws.Cells(i, 1).Value
+                ws.Range("I" & j) = Ticker_Symbol
+                Open_Price = ws.Cells(i, 3).Value
+                Vol = ws.Cells(i, 6).Value
+
+            Else
+                Vol = Vol + ws.Cells(i, 6).Value
+            End If
+        
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+            
+         ' Find all the values
+                Close_Price = ws.Cells(i, 6).Value
+                Yearly_Change = Close_Price - Open_Price
+                ws.Cells(j, 10).Value = Yearly_Change
+                
+                ' Find the value of Percent Change
+                If (Open_Price = 0 And Close_Price = 0) Then
+                    Percent_Change = 0
+                ElseIf (Open_Price = 0 And Close_Price <> 0) Then
+                    Percent_Change = 1
+                Else
+                    Percent_Change = Yearly_Change / Open_Price
+                    ws.Cells(j, 11).Value = Percent_Change
+                    ws.Cells(j, 11).NumberFormat = "0.00%"
+                End If
+                
+                ' Find the value of Total Stock Volumn
+                ws.Cells(j, 12).Value = Vol
+                
+                j = j + 1
+                Vol = 0
+                
+            End If
+            
+        Next i
+        
+        ' Find the Last Row of Yearly Change in each ws
+        XLastRow = j - 1
+
+        ' Fix the Cell Colors
+        For j = 2 To XLastRow
+
+            If (ws.Cells(j, 10).Value > 0 Or ws.Cells(j, 10).Value = 0) Then
+                ws.Cells(j, 10).Interior.ColorIndex = 4
+            ElseIf ws.Cells(j, 10).Value < 0 Then
+                ws.Cells(j, 10).Interior.ColorIndex = 3
+            Else
+                ws.Cells(j, 10).Interior.ColorIndex = 0
+            End If
+
+        Next j
+        
+    Next ws
+    
+End Sub
+
+
